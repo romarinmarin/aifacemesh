@@ -4,6 +4,7 @@ import * as tf from "@tensorflow/tfjs";
 import * as facemesh from "@tensorflow-models/facemesh";
 import Webcam from "react-webcam";
 import { useRef, useEffect } from "react";
+import { drawMesh } from "./utilitites";
 
 function App() {
   // setup refencies
@@ -15,7 +16,7 @@ function App() {
     const net = await facemesh.load();
     setInterval(() => {
       detect(net);
-    }, 10000);
+    }, 100);
   };
 
   // detect function
@@ -27,16 +28,18 @@ function App() {
     ) {
       // // Get Video Properties
       const video = webcamRef.current.video;
-      // const videoWidth = webcamRef.current.video.videoWidth;
-      // const videoHeight = webcamRef.current.video.videoHeight;
-      // // Set video width
-      // webcamRef.current.video.width = videoWidth;
-      // webcamRef.current.video.height = videoHeight;
-      // // Set canvas width
-      // canvasRef.current.width = videoWidth;
-      // canvasRef.current.height = videoHeight;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
+      // Set video width
+      webcamRef.current.video.width = videoWidth;
+      webcamRef.current.video.height = videoHeight;
+      // Set canvas width
+      canvasRef.current.width = videoWidth;
+      canvasRef.current.height = videoHeight;
       const faces = await net.estimateFaces(video);
       console.log(faces);
+      const ctx = canvasRef.current.getContext("2d");
+      drawMesh(faces, ctx);
     }
   };
 
